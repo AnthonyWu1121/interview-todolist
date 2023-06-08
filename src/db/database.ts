@@ -4,12 +4,14 @@ import { DataTypes, Sequelize } from 'sequelize';
 import User from "./model/user";
 import Task from "./model/task";
 import Log from "./model/log";
+import Comment from "./model/comment";
+import Mention from "./model/mention";
 
 const DIALECT : any = process.env.DIALECT;
 var DBURL : any = process.env.DBURL;
-if (process.env.NODE_ENV === "production") {
-    DBURL = process.env.PRDBURL;
-}
+// if (process.env.NODE_ENV === "production") {
+//     DBURL = process.env.PRDBURL;
+// }
 
 const sequelize = new Sequelize(DBURL, {
     dialect: DIALECT,
@@ -71,6 +73,10 @@ Log.init(
             type: new DataTypes.STRING(128),
             allowNull: false
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         taskId: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -84,6 +90,58 @@ Log.init(
         sequelize
     }
 );
+Comment.init(
+    {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        taskId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        content: {
+            type: new DataTypes.STRING(128),
+            allowNull: false
+        },
+        numOfMentions: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
+    }, {
+        tableName: "comments",
+        sequelize
+    }
+);
+Mention.init(
+    {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        commentId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        mentioned: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        numInComment: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
+    }, {
+        tableName: "mentions",
+        sequelize
+    }
+)
 
 const db : any = {}
 db.Sequelize = Sequelize;

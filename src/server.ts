@@ -8,6 +8,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 import db from './db/database';
 
+// db.sequelize.sync({force: true}).then(() => {
+//     console.log("db sync");
+// });
 db.sequelize.sync().then(() => {
     console.log("db sync");
 });
@@ -19,10 +22,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', router);
 
-app.get('/', (_, res : Response) => {
-    res.send('The server is working!');
-    console.log("default send");
-});
+// app.get('/', (_, res : Response) => {
+//     res.send('The server is working!');
+//     console.log("default send");
+// });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 app.listen(port, () => {
     console.log(`server is listening on ${port} !!!`);

@@ -20,6 +20,9 @@ const swaggerDefinition = {
         }, {
             "name": "Logs",
             "description": "API for logs"
+        }, {
+            "name": "Comments",
+            "description": "API for comments"
         }
     ],
     "paths": {
@@ -199,6 +202,148 @@ const swaggerDefinition = {
                 }
             }
         },
+        "/task/byCreator": {
+            "get": {
+                "tags": ["Tasks"],
+                "description": "Get task created by user",
+                "parameters": [
+                    {
+                        "name": "creator",
+                        "in": "query",
+                        "description": "The user that creates the tesks",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "array": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                            },
+                                            "duetime": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "creator": {
+                                                "type": "number",
+                                            },
+                                            "createdAt": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/task/sortbyCreator": {
+            "get": {
+                "tags": ["Tasks"],
+                "description": "Get all tasks sort by creator",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "array": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                            },
+                                            "duetime": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "creator": {
+                                                "type": "number",
+                                            },
+                                            "createdAt": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/task/sortbyCreatedAt": {
+            "get": {
+                "tags": ["Tasks"],
+                "description": "Get all tasks sort by created time",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "array": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "number",
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                            },
+                                            "duetime": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "creator": {
+                                                "type": "number",
+                                            },
+                                            "createdAt": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updatedAt": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/task/editTitle": {
             "put": {
                 "tags": ["Tasks"],
@@ -210,11 +355,14 @@ const swaggerDefinition = {
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "id": {
+                                    "taskId": {
                                         "type": "number",
                                     },
                                     "newTitle": {
                                         "type": "string"
+                                    },
+                                    "userId": {
+                                        "type": "number"
                                     }
                                 }
                             }
@@ -229,6 +377,47 @@ const swaggerDefinition = {
                                 "schema": {
                                     "type": "string",
                                     "example": "Edited task title"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/task/editDueTime": {
+            "put": {
+                "tags": ["Tasks"],
+                "description": "Edit task due time",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "applicaion/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "taskId": {
+                                        "type": "number",
+                                    },
+                                    "newDueTime": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "userId": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Edited task due time"
                                 }
                             }
                         }
@@ -279,6 +468,46 @@ const swaggerDefinition = {
                 }
             }
         },
+        "/comment/addnew": {
+            "post": {
+                "tags": ["Comments"],
+                "description": "Add new comments",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "applicaion/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "userId": {
+                                        "type": "number",
+                                    },
+                                    "taskId": {
+                                        "type": "number"
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "New comment added"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
     "definitions": {
         "userreq": {

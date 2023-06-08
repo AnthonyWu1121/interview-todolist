@@ -25,6 +25,7 @@ const addNewTask = async (req : Request, res : Response) => {
         const dbTaskId : any = dbTask?.id;
         const newLog = await Log.create({
             description: descriptionStr,
+            userId: creator,
             taskId: dbTaskId
         });
         console.log("new task added", newLog.description);
@@ -57,6 +58,7 @@ const removeTask = async (req : Request, res : Response) => {
         const dbTaskId : any = dbTask?.id;
         const newLog = await Log.create({
             description: descriptionStr,
+            userId: userId,
             taskId: dbTaskId
         });
         console.log("task removed", newLog.description);
@@ -80,19 +82,115 @@ const getAllTask = async (req : Request, res : Response) => {
 
 const editTaskTitle = async (req : Request, res : Response) => {
     try {
-        const { id, newTitle } = req.body;
+        const { taskId, newTitle, userId } = req.body;
+        const dbTask = await Task.findOne({
+            where: {
+                id: taskId
+            }
+        })
         await Task.update({
             title: newTitle
         }, {
             where: {
-                id: id
+                id: taskId
             }
-        })
-        console.log("editTaskTitle", newTitle);
-        res.status(200).send("editTaskTitle");
+        });
+        const user = await User.findOne({
+            where: {
+                id: userId
+            }
+        });
+        const descriptionStr : any = user?.name + " change task title from " + dbTask?.title + " to " + newTitle;
+        const newLog = await Log.create({
+            description: descriptionStr,
+            userId: userId,
+            taskId: taskId
+        });
+        console.log("Edited task title", descriptionStr);
+        res.status(200).send("Edited task title");
     } catch (e) {
         console.log("editTaskTitle err", e);
         res.send("editTaskTitle err");
+    }
+}
+
+const editTaskDueTime = async (req : Request, res : Response) => {
+    try {
+        const { taskId, newDueTime, userId } = req.body;
+        const dbTask = await Task.findOne({
+            where: {
+                id: taskId
+            }
+        });
+        await Task.update({
+            duetime: newDueTime
+        }, {
+            where: {
+                id: taskId
+            }
+        });
+        const user = await User.findOne({
+            where: {
+                id: userId
+            }
+        });
+        const descriptionStr : any = user?.name + " change task " + dbTask?.title + " duetime from " + dbTask?.duetime + " to " + newDueTime;
+        const newLog = await Log.create({
+            description: descriptionStr,
+            userId: userId,
+            taskId: taskId
+        });
+        console.log("Edited task due time", descriptionStr);
+        res.status(200).send("Edited task due time");
+    } catch (e) {
+        console.log("editTaskDueTime err", e);
+        res.send("editTaskDueTime err")
+    }
+}
+
+const getTaskByCreator = async (req : Request, res : Response) => {
+    try {
+        const creator : any = req.query.creator;
+        const taskCreated = await Task.findAll({
+            where: {
+                creator: creator
+            }
+        });
+        // console.log("getTaskByCreator", taskCreated);
+        res.status(200).send(taskCreated);
+    } catch (e) {
+        console.log("getTaskByCreator err", e);
+        res.send("getTaskByCreator err");
+    }
+}
+
+const getTaskSortByCreator = async (req : Request, res : Response) => {
+    try {
+        const sortedTasks = await Task.findAll({
+            order: [
+                ['creator', 'DESC']
+            ]
+        });
+        console.log("getTaskSortByCreator");
+        res.status(200).send(sortedTasks)
+    } catch (e) {
+        console.log("getTaskSortByCreator err", e);
+        res.send("getTaskSortByCreator err");
+    }
+}
+
+const getTaskSortByCreatedAt = async (req : Request, res : Response) => {
+    try {
+        const sortedTasks = await Task.findAll({
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
+        console.log("getTaskSortByCreatedAt");
+        res.status(200).send(sortedTasks)
+    } catch (e) {
+        console.log("getTaskSortByCreatedAt err", e);
+        res.send("getTaskSortByCreatedAt err");
     }
 }
 
@@ -100,5 +198,9 @@ export {
     addNewTask,
     removeTask,
     getAllTask,
-    editTaskTitle
+    getTaskByCreator,
+    editTaskTitle,
+    editTaskDueTime,
+    getTaskSortByCreator,
+    getTaskSortByCreatedAt
 };
