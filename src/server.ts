@@ -8,9 +8,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 import db from './db/database';
 
+// foreign key
+// eager, lazy loading
+// soft delete
+
 // db.sequelize.sync({force: true}).then(() => {
 //     console.log("db sync");
 // });
+// db.sequelize.drop();
 db.sequelize.sync().then(() => {
     console.log("db sync");
 });

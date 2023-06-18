@@ -35,7 +35,8 @@ User.init(
         }
     }, {
         tableName: 'users',
-        sequelize
+        sequelize,
+        paranoid: true
     }
 );
 Task.init(
@@ -59,9 +60,16 @@ Task.init(
         }
     }, {
         tableName: 'tasks',
-        sequelize
+        sequelize,
+        paranoid: true
     }
 );
+Task.belongsTo(User, {
+    foreignKey: 'creator',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+User.hasMany(Task);
 Log.init(
     {
         id: {
@@ -73,21 +81,22 @@ Log.init(
             type: new DataTypes.STRING(128),
             allowNull: false
         },
-        userId: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        taskId: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        commentId: {
-            type: DataTypes.INTEGER,
-            allowNull: true
-        }
+        // userId: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
+        // taskId: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
+        // commentId: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: true
+        // }
     }, {
         tableName: 'logs',
-        sequelize
+        sequelize,
+        paranoid: true
     }
 );
 Comment.init(
@@ -97,14 +106,14 @@ Comment.init(
             autoIncrement: true,
             primaryKey: true
         },
-        userId: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        taskId: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // userId: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
+        // taskId: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         content: {
             type: new DataTypes.STRING(128),
             allowNull: false
@@ -115,9 +124,40 @@ Comment.init(
         }
     }, {
         tableName: "comments",
-        sequelize
+        sequelize,
+        paranoid: true
     }
 );
+Log.belongsTo(User, {
+    // foreignKey: 'userId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+User.hasMany(Log);
+Log.belongsTo(Task, {
+    // foreignKey: 'taskId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Task.hasMany(Log);
+Log.belongsTo(Comment, {
+    // foreignKey: 'commentId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Comment.hasMany(Log);
+User.hasMany(Comment, {
+    // foreignKey: 'userId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Comment.belongsTo(User);
+Task.hasMany(Comment, {
+    // foreignKey: 'taskId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Comment.belongsTo(Task);
 Mention.init(
     {
         id: {
@@ -125,10 +165,10 @@ Mention.init(
             autoIncrement: true,
             primaryKey: true
         },
-        commentId: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // commentId: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         mentioned: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -139,9 +179,16 @@ Mention.init(
         }
     }, {
         tableName: "mentions",
-        sequelize
+        sequelize,
+        paranoid: true
     }
-)
+);
+Comment.hasMany(Mention, {
+    // foreignKey: 'commentId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Mention.belongsTo(Comment);
 
 const db : any = {}
 db.Sequelize = Sequelize;

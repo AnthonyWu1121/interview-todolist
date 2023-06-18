@@ -9,25 +9,35 @@ const addNewTask = async (req : Request, res : Response) => {
         const newTask = await Task.create({
             title: title,
             creator: creator
+        // }, {
+        //     include: [{
+        //         model: User,
+        //         as: 'user'
+        //     }]
         });
-        const dbTask = await Task.findOne({
-            where: {
-                title: title,
-                creator: creator
-            }
-        });
-        const user = await User.findOne({
-            where: {
-                id: creator
-            }
-        });
-        const descriptionStr : any = user?.name + " added task " + title;
-        const dbTaskId : any = dbTask?.id;
+        // await newTask.setCreator(creator);
+        // const dbTask = await Task.findOne({
+        //     where: {
+        //         title: title,
+        //         creator: creator
+        //     }
+        // });
+        // const user = await User.findOne({
+        //     where: {
+        //         id: creator
+        //     }
+        // });
+        // const taskWtihUser = newTask as Task & { user: User };
+        const user = await newTask.getUser();
+        const descriptionStr : any = user.name + " added task " + title;
+        // const dbTaskId : any = newTask.id;
         const newLog = await Log.create({
             description: descriptionStr,
-            userId: creator,
-            taskId: dbTaskId
+            // userId: creator,
+            // taskId: newTask.id
         });
+        await newLog.setUser(creator);
+        await newLog.setTask(newTask.id);
         console.log("new task added", newLog.description);
         res.status(200).send("new task added");
     } catch (e) {
@@ -58,9 +68,11 @@ const removeTask = async (req : Request, res : Response) => {
         const dbTaskId : any = dbTask?.id;
         const newLog = await Log.create({
             description: descriptionStr,
-            userId: userId,
-            taskId: dbTaskId
+            // userId: userId,
+            // taskId: dbTaskId
         });
+        await newLog.setUser(userId);
+        await newLog.setTask(dbTaskId);
         console.log("task removed", newLog.description);
         res.status(200).send("task removed");
     } catch (e) {
@@ -103,9 +115,11 @@ const editTaskTitle = async (req : Request, res : Response) => {
         const descriptionStr : any = user?.name + " change task title from " + dbTask?.title + " to " + newTitle;
         const newLog = await Log.create({
             description: descriptionStr,
-            userId: userId,
-            taskId: taskId
+            // userId: userId,
+            // taskId: taskId
         });
+        await newLog.setUser(userId);
+        await newLog.setTask(taskId);
         console.log("Edited task title", descriptionStr);
         res.status(200).send("Edited task title");
     } catch (e) {
@@ -137,9 +151,11 @@ const editTaskDueTime = async (req : Request, res : Response) => {
         const descriptionStr : any = user?.name + " change task " + dbTask?.title + " duetime from " + dbTask?.duetime + " to " + newDueTime;
         const newLog = await Log.create({
             description: descriptionStr,
-            userId: userId,
-            taskId: taskId
+            // userId: userId,
+            // taskId: taskId
         });
+        await newLog.setUser(userId);
+        await newLog.setTask(taskId);
         console.log("Edited task due time", descriptionStr);
         res.status(200).send("Edited task due time");
     } catch (e) {
